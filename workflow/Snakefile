@@ -1,0 +1,15 @@
+configfile: "config/config.yaml"
+
+include: "rules/common.smk"
+include: "rules/qc.smk"
+include: "rules/assembly.smk"
+
+rule all:
+    input:
+        "results/00-qc/multiqc/multiqc_report.html",
+        expand("results/00-qc/fastqc/raw/{sample}.fastqc.done", sample=SAMPLES),
+        expand("results/spades-assemblies/{sample}/{sample}.contigs.fasta", sample=SAMPLES)
+        #"results/qc_summary/sequencing_summary.csv",
+        #expand("results/fastp/cleaned-fastq/{sample}/{sample}_R1.fastq.gz", sample=SAMPLES),
+        #expand("results/fastp/cleaned-fastq/{sample}/{sample}_R2.fastq.gz", sample=SAMPLES),
+        #expand("results/fastp/cleaned-fastq/{sample}/{sample}_single.fastq.gz", sample=SAMPLES)

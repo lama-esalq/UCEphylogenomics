@@ -1,0 +1,23 @@
+samples: '/mnt/e/ESALQ/sciuridae_edson/UCEphylogenomics/config/samples.csv'
+
+threads:
+  fastp: 4
+  assembly: 6
+
+# memory for assembly is in Gb
+memory:
+  assembly: 4
+
+params:
+  fastp: "--cut_mean_quality 24 --cut_tail --cut_front --trim_poly_g --detect_adapter_for_pe --dont_eval_duplication --length_required 50"
+
+env:
+  qc: "../../envs/qc.yml"
+  #phyluce: "../../envs/phyluce-1.7.3-py36-macOS-conda.yml"
+  phyluce: "phyluce-1.7.3"
+
+#assembly:
+#  assembler: spades
+
+#match_contigs:
+#  probes: probes.fasta
