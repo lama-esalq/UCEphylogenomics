@@ -1,4 +1,4 @@
-samples: '/mnt/e/ESALQ/sciuridae_edson/UCEphylogenomics/config/samples.csv'
+samples: 'samples.csv'
 
 threads:
   fastp: 4
@@ -13,11 +13,5 @@ params:
 
 env:
   qc: "../../envs/qc.yml"
-  #phyluce: "../../envs/phyluce-1.7.3-py36-macOS-conda.yml"
-  phyluce: "phyluce-1.7.3"
+  phyluce: "../../envs/phyluce-1.7.3-py36-macOS-conda.yml"
 
-#assembly:
-#  assembler: spades
-
-#match_contigs:
-#  probes: probes.fasta
