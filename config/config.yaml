@@ -15,3 +15,8 @@ env:
   qc: "../../envs/qc.yml"
   phyluce: "../../envs/phyluce-1.7.3-py36-macOS-conda.yml"
 
+match_contigs:
+  probes: "config/Tetrapods-UCE-5Kv1.fasta"
+  taxon-set_file: "config/taxon-set_teste.conf"
+  taxon-set_name: "teste"
+  get_match_counts_params: "--incomplete-matrix"
