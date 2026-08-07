@@ -69,4 +69,4 @@ rule multiqc:
         outdir="results/00-qc/multiqc",
         indir="results/00-qc"
     shell:
-        "multiqc {params.indir} --outdir {params.outdir}"
+        "multiqc {params.indir} -f -z --outdir {params.outdir} 2> {log}"
