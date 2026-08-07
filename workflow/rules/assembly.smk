@@ -1,36 +1,58 @@
 rule assembly_conf:
     output:
-        "results/assembly.conf"
+        temp("results/01-assembly/{sample}.conf")
     run:
+        sample = wildcards.sample
         with open(output[0], "w") as fout:
             fout.write("[samples]\n")
-            for sample in SAMPLES:
-                fout.write(
-                    f"{sample}:"
-                    f"results/00-qc/fastp/{sample}/\n"
-                )
+            fout.write(
+                f"{sample}:"
+                f"results/00-qc/fastp/{sample}/\n"
+            )
 
 rule spades_assembly:
     input:
-        conf="results/assembly.conf",
-        files=expand("results/00-qc/fastp/{sample}/{sample}.fastp.json", sample=SAMPLES)
+        conf="results/01-assembly/{sample}.conf",
+        file="results/00-qc/fastp/{sample}/{sample}.fastp.json"
     output:
-        expand("results/spades-assemblies/{sample}/{sample}.contigs.fasta", sample=SAMPLES)
+        "results/01-assembly/{sample}_spades/contigs.fasta"
     conda:
         config["env"]["phyluce"]
     threads:
         config["threads"]["assembly"]
     params:
-        outdir="results/spades-assemblies/",
-        memory=config["memory"]["assembly"]
+        outdir="results/01-assembly/",
+        memory=config["memory"]["assembly"],
+        dirsample="results/01-assembly/{sample}_spades"
     log:
-        "logs/assembly/spades.log"
+        "logs/assembly/{sample}.spades_assembly.log"
     shell:
         """
+        if [ -d "{params.dirsample}" ]; then rm -rf {params.dirsample}; fi
         phyluce_assembly_assemblo_spades \
             --conf {input.conf} \
             --output {params.outdir} \
             --cores {threads} \
             --memory {params.memory} \
             > {log} 2>&1
+        """
+
+rule assembly_qc:
+    input:
+        expand("results/01-assembly/{sample}_spades/contigs.fasta", sample=SAMPLES)
+    output:
+        "results/01-assembly/qc/contig_lengths.csv"
+    conda:
+        config["env"]["phyluce"]
+    params:
+        "results/01-assembly/contigs"
+    log:
+        "logs/assembly/assembly_qc.log"
+    shell:
+        """
+        echo "samples,contigs,total bp,mean length,95 CI length,min length,max length,median legnth,contigs >1kb" > {output}
+
+        for i in $(ls {params}/*); do
+        phyluce_assembly_get_fasta_lengths --input $i --csv >> {output} 2>> {log}
+        done
         """
