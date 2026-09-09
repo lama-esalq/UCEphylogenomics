@@ -15,7 +15,8 @@ rule spades_assembly:
         conf="results/01-assembly/{sample}.conf",
         file="results/00-qc/fastp/{sample}/{sample}.fastp.json"
     output:
-        "results/01-assembly/{sample}_spades/contigs.fasta"
+        contigs="results/01-assembly/{sample}_spades/contigs.fasta",
+        done="results/01-assembly/{sample}_spades/.assembly_ran"
     conda:
         config["env"]["phyluce"]
     threads:
@@ -35,6 +36,7 @@ rule spades_assembly:
             --cores {threads} \
             --memory {params.memory} \
             > {log} 2>&1
+        touch {output.done}
         """
 
 rule assembly_qc:

@@ -1,7 +1,31 @@
+rule clean_broken_contig_links:
+    input:
+        expand("results/01-assembly/{sample}_spades/.assembly_ran", sample=SAMPLES)
+    output:
+        "results/01-assembly/contigs/.links_checked"
+    log:
+        "logs/assembly/clean_broken_contig_links.log"
+    params:
+        dir="results/01-assembly/contigs"
+    shell:
+        """
+        for link in {params.dir}/*.contigs.fasta; do
+            if [ -L "$link" ]; then
+                target=$(readlink -f "$link")
+                if [ ! -e "$target" ]; then
+                    echo "Removing broken symlink: $link -> $target" >> {log}
+                    rm "$link"
+                fi
+            fi
+        done
+        touch {output}
+        """
+
 rule match_contigs:
     input:
         config["match_contigs"]["probes"],
-        expand("results/01-assembly/{sample}_spades/contigs.fasta", sample=SAMPLES)
+        expand("results/01-assembly/{sample}_spades/contigs.fasta", sample=SAMPLES),
+        "results/01-assembly/contigs/.links_checked"
     output:
         expand("results/03-match_contigs/{sample}.contigs.lastz", sample=SAMPLES),
         "results/03-match_contigs/probe.matches.sqlite"
